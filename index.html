@@ -1,0 +1,1685 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>台南海事 AI 航海法規智慧系統 - 歡迎首頁</title>
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            ocean: {
+              50: '#f0f9ff',
+              100: '#e0f2fe',
+              200: '#bae6fd',
+              500: '#0284c7',
+              600: '#025a87',
+              700: '#0369a1',
+              800: '#075985',
+              900: '#0c4a6e',
+              950: '#082f49',
+            },
+            gold: {
+              400: '#fbbf24',
+              500: '#f59e0b',
+              600: '#d97706',
+            }
+          },
+          fontFamily: {
+            sans: ['Noto Sans TC', 'Outfit', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+  
+  <!-- PDF.js CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+  
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  
+  <!-- Local Static Law script to bypass file:// CORS -->
+  <script src="law.js"></script>
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    /* Elegant scrolling background */
+    @keyframes gradient-y {
+      0%, 100% { background-position: 0% 0%; }
+      50% { background-position: 100% 100%; }
+    }
+    .animate-gradient {
+      background-size: 400% 400%;
+      animation: gradient-y 15s ease infinite;
+    }
+    /* Wave animation */
+    @keyframes wave-float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-8px); }
+    }
+    .wave-float {
+      animation: wave-float 4s ease-in-out infinite;
+    }
+  </style>
+</head>
+<body class="bg-gradient-to-br from-slate-950 via-ocean-950 to-slate-900 text-slate-100 min-h-screen font-sans flex flex-col overflow-x-hidden relative">
+
+  <!-- Top Navigation Bar -->
+  <nav class="fixed top-0 left-0 w-full bg-slate-900/80 backdrop-blur-md border-b border-ocean-900/50 z-40 shadow-lg px-6 py-4 flex items-center justify-between">
+    <div class="flex items-center gap-3">
+      <!-- Steering Wheel Golden SVG -->
+      <svg class="w-8 h-8 text-gold-400 drop-shadow-[0_0_8px_rgba(245,158,11,0.5)] hover:rotate-45 transition-transform duration-700" viewBox="0 0 200 200" fill="none" stroke="currentColor" stroke-width="8" stroke-linecap="round">
+        <line x1="100" y1="15" x2="100" y2="185" />
+        <line x1="15" y1="100" x2="185" y2="100" />
+        <line x1="40" y1="40" x2="160" y2="160" />
+        <line x1="40" y1="160" x2="160" y2="40" />
+        <circle cx="100" cy="100" r="65" stroke-width="12" />
+        <circle cx="100" cy="100" r="45" stroke-width="6" />
+        <circle cx="100" cy="100" r="20" fill="currentColor" />
+      </svg>
+      <span class="text-lg md:text-xl font-black tracking-wider bg-gradient-to-r from-white via-slate-100 to-ocean-200 bg-clip-text text-transparent">
+        台南海事 AI 航海法規智慧系統
+      </span>
+    </div>
+    <div class="flex items-center gap-2">
+      <span class="bg-ocean-800/60 border border-ocean-500/30 text-ocean-100 px-4 py-1.5 rounded-full text-xs md:text-sm font-semibold flex items-center gap-2 shadow-inner">
+        <span class="text-gold-400">🧑‍✈️</span> 講師: 陳文舟 老師
+      </span>
+    </div>
+  </nav>
+
+  <!-- Notification Toast Container -->
+  <div id="toast-container" class="fixed top-20 right-6 z-50 flex flex-col gap-3 pointer-events-none"></div>
+
+  <!-- Main Grid Layout -->
+  <main class="flex-grow max-w-7xl w-full mx-auto px-6 py-8 mt-24 grid grid-cols-1 lg:grid-cols-12 gap-8 z-10">
+    
+    <!-- Left Sidebar: API Brain Configuration (lg: 4 cols) -->
+    <aside class="lg:col-span-4 flex flex-col gap-6">
+      <div class="bg-slate-900/60 border border-ocean-900/50 rounded-2xl p-6 backdrop-blur-md shadow-2xl flex flex-col gap-5 hover:border-ocean-800/60 transition-all duration-300">
+        
+        <div class="border-b border-ocean-900/50 pb-4">
+          <h2 class="text-lg font-bold text-ocean-100 flex items-center gap-2.5">
+            <span class="text-xl">🧠</span> 1. 配置您的雙 AI 大腦
+          </h2>
+          <p class="text-xs text-slate-400 mt-1">設定您的 API 金鑰以驅動智慧航海法規系統</p>
+        </div>
+
+        <!-- Teacher Preset Key Banner -->
+        <div id="teacher-preset-banner" class="hidden bg-emerald-950/60 border border-emerald-500/30 rounded-xl p-3.5 flex flex-col gap-1 shadow-md">
+          <span class="text-xs font-bold text-emerald-400 flex items-center gap-1.5">
+            <span>🎁</span> 老師已提供免填金鑰
+          </span>
+          <span class="text-[10px] text-emerald-300 leading-relaxed">
+            陳文舟老師已預先配置好系統 AI 大腦，各位同學免申請金鑰，直接點選右側分頁即可開始練習！
+          </span>
+        </div>
+
+        <!-- Groq API Key Input -->
+        <div class="flex flex-col gap-2">
+          <label for="groq-key" class="text-sm font-semibold text-slate-300 flex items-center justify-between">
+            <span>Groq API Key <span class="text-rose-500">*主要</span></span>
+            <a href="https://console.groq.com/keys" target="_blank" class="text-xs text-ocean-400 hover:text-ocean-300 transition-colors">獲取 Key ↗</a>
+          </label>
+          <div class="relative">
+            <input type="password" id="groq-key" placeholder="輸入 gsk_ 開頭的 API 金鑰..." 
+              class="w-full bg-slate-950/70 border border-ocean-900/60 focus:border-ocean-500/80 rounded-lg px-3.5 py-2.5 text-sm text-slate-200 focus:outline-none transition-all pr-10 shadow-inner">
+            <button type="button" onclick="togglePasswordVisibility('groq-key', this)" class="absolute right-3 top-3 text-slate-500 hover:text-slate-300 text-xs">👁️</button>
+          </div>
+        </div>
+
+        <!-- Gemini API Key Input -->
+        <div class="flex flex-col gap-2">
+          <label for="gemini-key" class="text-sm font-semibold text-slate-300 flex items-center justify-between">
+            <span>Gemini API Key <span class="text-slate-500 font-normal">(備用大腦 - 選填)</span></span>
+            <a href="https://aistudio.google.com/" target="_blank" class="text-xs text-ocean-400 hover:text-ocean-300 transition-colors">獲取 Key ↗</a>
+          </label>
+          <div class="relative">
+            <input type="password" id="gemini-key" placeholder="輸入 AIzaSy 開頭的 API 金鑰..." 
+              class="w-full bg-slate-950/70 border border-ocean-900/60 focus:border-ocean-500/80 rounded-lg px-3.5 py-2.5 text-sm text-slate-200 focus:outline-none transition-all pr-10 shadow-inner">
+            <button type="button" onclick="togglePasswordVisibility('gemini-key', this)" class="absolute right-3 top-3 text-slate-500 hover:text-slate-300 text-xs">👁️</button>
+          </div>
+        </div>
+
+        <!-- Confirm Button -->
+        <button id="btn-save-keys" class="w-full bg-gradient-to-r from-ocean-600 to-blue-700 hover:from-ocean-500 hover:to-blue-600 text-white font-bold py-3 px-4 rounded-xl shadow-lg active:scale-[0.97] hover:shadow-[0_0_15px_rgba(2,132,199,0.4)] transition-all duration-200 text-sm flex items-center justify-center gap-2">
+          ⚓ 確認啟用金鑰
+        </button>
+
+        <!-- Status Indicator Light -->
+        <div class="bg-slate-950/40 border border-ocean-950 rounded-xl p-4 flex items-center justify-between shadow-inner">
+          <span class="text-xs font-semibold text-slate-400">大腦系統燈號:</span>
+          <div class="flex items-center gap-2.5">
+            <!-- Dynamic light circle -->
+            <span class="relative flex h-3.5 w-3.5">
+              <span id="status-ping" class="animate-ping absolute inline-flex h-full w-full rounded-full opacity-75"></span>
+              <span id="status-dot" class="relative inline-flex rounded-full h-3.5 w-3.5"></span>
+            </span>
+            <span id="status-text" class="text-sm font-black tracking-wide"></span>
+          </div>
+        </div>
+
+      </div>
+
+    </aside>
+
+    <!-- Right Area: Dashboard System Preview & Interactive Welcome Console (lg: 8 cols) -->
+    <section class="lg:col-span-8 flex flex-col gap-6">
+      
+      <!-- State 1: Locked Standby console (Show when Groq key is missing) -->
+      <div id="panel-locked" class="flex-grow bg-slate-900/40 border border-dashed border-ocean-900/60 rounded-2xl p-12 flex flex-col items-center justify-center text-center backdrop-blur-sm min-h-[450px] transition-all duration-500">
+        <div class="w-20 h-20 rounded-full bg-ocean-950/80 border border-ocean-900 flex items-center justify-center text-3xl mb-6 wave-float shadow-2xl text-ocean-400">
+          🔒
+        </div>
+        <h3 class="text-xl font-bold text-ocean-100 mb-2">系統大腦待命運作中</h3>
+        <p class="text-slate-400 max-w-md text-sm leading-relaxed mb-6">
+          本智慧航海法規諮詢系統目前處於安全鎖定狀態。請在左側配置您的 <strong class="text-ocean-300">Groq 主要大腦金鑰</strong>，以啟動 AI 模型並解鎖法規檢索功能。
+        </p>
+        <div class="text-xs text-ocean-500/80 border border-ocean-950 rounded-lg px-4 py-2 bg-slate-950/30 flex items-center gap-2">
+          ⚓ 國立台南海事航海科資訊中心
+        </div>
+      </div>
+
+      <!-- State 2: Unlocked Active Dashboard (Show when Groq key is present) -->
+      <div id="panel-unlocked" class="hidden flex-grow flex-col gap-6 transition-all duration-500">
+        
+        <!-- Welcome banner -->
+        <div class="bg-gradient-to-r from-ocean-900/80 to-slate-900/80 border border-ocean-800/40 rounded-2xl p-6 backdrop-blur-md shadow-2xl flex flex-col md:flex-row items-center justify-between gap-4">
+          <div>
+            <h3 class="text-xl font-black text-gold-400 flex items-center gap-2">
+              🚢 歡迎使用本系統！
+            </h3>
+            <p class="text-xs text-slate-300 mt-1">智慧大腦已順利啟用。您現在可進行海事避碰法規諮詢。</p>
+          </div>
+          <button onclick="clearKeys()" class="text-xs font-semibold bg-rose-950/60 border border-rose-900/50 hover:bg-rose-900/80 text-rose-200 px-4 py-2 rounded-lg transition-colors active:scale-95">
+            ❌ 清除金鑰登出
+          </button>
+        </div>
+
+        <!-- Tabs Navigation -->
+        <div class="flex border-b border-ocean-900/30 gap-6 mt-2">
+          <button id="tab-chat-btn" onclick="switchTab('chat')" class="pb-3 text-sm font-bold text-ocean-100 border-b-2 border-ocean-500 transition-all flex items-center gap-2 cursor-pointer">
+            <span>💬</span> 智慧法規問答 (RAG)
+          </button>
+          <button id="tab-ledger-btn" onclick="switchTab('ledger')" class="pb-3 text-sm font-bold text-ocean-400 border-b-2 border-transparent transition-all hover:text-ocean-200 flex items-center gap-2 cursor-pointer">
+            <span>💰</span> 智慧收支簿
+          </button>
+          <button id="tab-quiz-btn" onclick="switchTab('quiz')" class="pb-3 text-sm font-bold text-ocean-400 border-b-2 border-transparent transition-all hover:text-ocean-200 flex items-center gap-2 cursor-pointer">
+            <span>📝</span> 隨堂測驗挑戰
+          </button>
+          <button id="tab-admin-btn" onclick="switchTab('admin')" class="pb-3 text-sm font-bold text-ocean-400 border-b-2 border-transparent transition-all hover:text-ocean-200 flex items-center gap-2 cursor-pointer">
+            <span>📊</span> 班級行政助手
+          </button>
+        </div>
+
+        <!-- Tab Content 1: RAG Chat (Default active) -->
+        <div id="tab-chat-content" class="flex flex-col gap-5">
+          <!-- Dropdowns selectors -->
+          <div class="bg-slate-900/60 border border-ocean-900/40 rounded-xl p-4 flex flex-col sm:flex-row gap-4 items-center justify-between shadow-md">
+            <div class="w-full sm:w-auto flex items-center gap-2.5">
+              <label for="select-brain" class="text-xs font-bold text-slate-400 whitespace-nowrap">🧠 大腦選擇:</label>
+              <select id="select-brain" onchange="onBrainChange()" class="bg-slate-950 border border-ocean-900/60 text-slate-200 text-xs rounded-lg px-3 py-2.5 focus:outline-none focus:border-ocean-500 w-full sm:w-56 cursor-pointer">
+                <option value="groq">Groq Llama 3 (主要)</option>
+                <option value="gemini">Gemini 2.5 Flash (備用)</option>
+              </select>
+            </div>
+            <div class="w-full sm:w-auto flex items-center gap-2.5">
+              <label for="select-tone" class="text-xs font-bold text-slate-400 whitespace-nowrap">💬 回話語氣:</label>
+              <select id="select-tone" class="bg-slate-950 border border-ocean-900/60 text-slate-200 text-xs rounded-lg px-3 py-2.5 focus:outline-none focus:border-ocean-500 w-full sm:w-64 cursor-pointer">
+                <option value="captain">親切且擅長白話比喻的資深老船長</option>
+                <option value="judge">嚴謹負責、條理分明的海事法規法官</option>
+                <option value="teacher">耐心溫柔、循循善誘的陳文舟老師</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Chat history console -->
+          <div class="bg-slate-900/60 border border-ocean-900/40 rounded-xl p-5 backdrop-blur-md shadow-xl flex flex-col gap-4 min-h-[380px]">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+              <h4 class="text-sm font-bold text-slate-200 flex items-center gap-2">
+                <span class="inline-block w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                AI 智慧法規助理 (雙大腦協同 RAG 模式)
+              </h4>
+              <span id="active-brain-badge" class="text-xs text-ocean-400 font-semibold bg-ocean-950/80 border border-ocean-800/30 px-3 py-1 rounded">Groq Llama 3</span>
+            </div>
+
+            <!-- Messages List Container -->
+            <div id="chat-messages" class="flex-grow flex flex-col gap-4 h-[240px] overflow-y-auto pr-1 scroll-smooth">
+              <div class="flex gap-2">
+                <div class="w-8 h-8 rounded-full bg-ocean-800 text-xs font-bold flex items-center justify-center flex-shrink-0 text-slate-200">🤖</div>
+                <div class="bg-slate-950/60 border border-ocean-900/20 px-3.5 py-2 rounded-xl text-xs text-slate-300 max-w-[85%] leading-relaxed shadow">
+                  你好！我是航海法規 RAG 智慧助理。我會根據左側「航海法規知識庫」載入的即時內容解答您的疑問。請在下方輸入您想諮詢的航海法規問題！
+                </div>
+              </div>
+            </div>
+
+            <!-- Chat input bar -->
+            <div class="flex gap-2 mt-2">
+              <input type="text" id="chat-input" disabled placeholder="請在左側配置金鑰以啟用對話..." class="flex-grow bg-slate-100 border border-ocean-900/40 focus:border-ocean-500/80 rounded-lg px-4 py-3 text-xs text-slate-900 focus:outline-none transition-all disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-slate-950/40 disabled:text-slate-500 shadow-inner">
+              <button id="chat-send" disabled class="bg-slate-800 text-slate-500 font-bold px-6 py-3 rounded-lg text-xs transition-all duration-200 disabled:cursor-not-allowed">發送對話</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tab Content 2: Smart Ledger (Initially hidden) -->
+        <div id="tab-ledger-content" class="hidden flex-col gap-5">
+          
+          <!-- AI Bookkeeping Input Card -->
+          <div class="bg-slate-900/60 border border-ocean-900/40 rounded-xl p-5 backdrop-blur-md shadow-xl flex flex-col gap-4">
+            <div class="border-b border-ocean-900/30 pb-3 flex items-center justify-between">
+              <h4 class="text-sm font-bold text-slate-200 flex items-center gap-2">
+                <span>✍️</span> 1. 語音/文字記帳 (AI 智慧辨識)
+              </h4>
+              <span class="text-[10px] text-slate-400 bg-ocean-950 px-2 py-0.5 border border-ocean-800/30 rounded">使用 Groq Llama 3 大腦</span>
+            </div>
+            <div class="flex flex-col sm:flex-row gap-3">
+              <input type="text" id="ledger-input" placeholder="請用平常說話的方式記帳，例如：今天收班費 3000 元 或 買粉筆花了 120 元" 
+                class="flex-grow bg-slate-100 border border-ocean-900/40 focus:border-ocean-500/80 rounded-lg px-4 py-3 text-xs text-slate-900 focus:outline-none transition-all shadow-inner">
+              <button id="btn-ledger-ai" class="bg-ocean-600 hover:bg-ocean-500 active:scale-95 text-white font-bold px-6 py-3 rounded-lg text-xs transition-all duration-200 cursor-pointer shadow-md flex items-center justify-center gap-2 whitespace-nowrap">
+                <span>💰</span> AI 記帳
+              </button>
+            </div>
+          </div>
+
+          <!-- Ledger明細表格 Card -->
+          <div class="bg-slate-900/60 border border-ocean-900/40 rounded-xl p-5 backdrop-blur-md shadow-xl flex flex-col gap-4">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+              <h4 class="text-sm font-bold text-slate-200 flex items-center gap-2">
+                <span>📊</span> 2. 收支明細與流水帳
+              </h4>
+              <a href="#" onclick="clearLedger(); return false;" class="text-xs text-rose-400 hover:text-rose-300 hover:underline transition-colors">
+                🗑️ 清除所有記帳紀錄
+              </a>
+            </div>
+            
+            <div class="overflow-x-auto">
+              <table class="w-full text-left border-collapse text-xs">
+                <thead>
+                  <tr class="border-b border-slate-800 text-slate-400 font-semibold bg-slate-950/40">
+                    <th class="py-3 px-3">時間</th>
+                    <th class="py-3 px-3">項目</th>
+                    <th class="py-3 px-3 text-center">收支分類</th>
+                    <th class="py-3 px-3 text-right">金額</th>
+                    <th class="py-3 px-3 text-right">餘額</th>
+                  </tr>
+                </thead>
+                <tbody id="ledger-rows" class="divide-y divide-slate-800/60 text-slate-300">
+                  <!-- JS dynamically inserts rows here -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Tab Content 3: Class Quiz Challenge (Initially hidden) -->
+        <div id="tab-quiz-content" class="hidden flex-col gap-5">
+          
+          <!-- Generation Action Card -->
+          <div class="bg-slate-900/60 border border-ocean-900/40 rounded-xl p-6 backdrop-blur-md shadow-xl flex flex-col gap-4 items-center text-center">
+            <h4 class="text-sm font-bold text-slate-200 flex items-center gap-2">
+              <span>📝</span> 隨堂測驗隨機挑戰
+            </h4>
+            <p class="text-xs text-slate-400 max-w-md">
+              系統將會分析背景的海事法規知識庫，模擬專業海事出題教授，為您精挑細選並隨機生成 3 題選擇題挑戰！
+            </p>
+            <button id="btn-generate-quiz" class="bg-gradient-to-r from-amber-500 to-gold-600 hover:from-amber-400 hover:to-gold-500 text-slate-950 font-black py-3 px-8 rounded-xl shadow-lg active:scale-95 hover:shadow-[0_0_20px_rgba(245,158,11,0.4)] transition-all duration-200 text-sm flex items-center justify-center gap-2 cursor-pointer">
+              ⚡ 一鍵生成 3 題隨堂測驗
+            </button>
+          </div>
+
+          <!-- Quiz Loading State -->
+          <div id="quiz-loading" class="hidden bg-slate-900/60 border border-ocean-900/40 rounded-xl p-10 flex-col items-center justify-center text-center backdrop-blur-sm min-h-[160px]">
+            <span class="animate-spin text-3xl mb-4">⚓</span>
+            <p class="text-xs text-slate-300 font-semibold">海事科出題教授正在出題中，請稍候...</p>
+          </div>
+
+          <!-- Quiz Render Area -->
+          <div id="quiz-area" class="flex flex-col gap-6"></div>
+
+          <!-- Quiz Result Card (Initially hidden) -->
+          <div id="quiz-result" class="hidden bg-gradient-to-b from-slate-900/80 to-ocean-950/80 border border-gold-500/30 rounded-xl p-6 backdrop-blur-md shadow-xl flex-col items-center text-center gap-4">
+            <div class="text-4xl">🏆</div>
+            <h4 class="text-lg font-bold text-gold-400">測驗挑戰完成！</h4>
+            <div class="flex items-baseline gap-1 mt-2">
+              <span id="quiz-score-num" class="text-5xl font-black text-white">0</span>
+              <span class="text-slate-400 text-lg">/ 3 題答對</span>
+            </div>
+            <p id="quiz-score-feedback" class="text-xs text-slate-300 max-w-sm leading-relaxed mt-1"></p>
+            <button onclick="restartQuiz()" class="mt-2 bg-ocean-800 hover:bg-ocean-700 text-ocean-100 text-xs px-5 py-2.5 rounded-lg border border-ocean-600/40 transition-colors active:scale-95 cursor-pointer">
+              🔄 再挑戰一次
+            </button>
+          </div>
+
+        </div>
+
+        <!-- Tab Content 4: Class Admin Assistant (Initially hidden) -->
+        <div id="tab-admin-content" class="hidden flex-col gap-5">
+          <!-- Grade Table and Chart.js Doughnut -->
+          <div class="grid grid-cols-1 md:grid-cols-12 gap-5">
+            <!-- Left: Student Grade Table (md:col-span-7) -->
+            <div class="md:col-span-7 bg-slate-900/60 border border-ocean-900/40 rounded-xl p-5 backdrop-blur-md shadow-xl flex flex-col gap-4">
+              <h4 class="text-sm font-bold text-slate-200 flex items-center gap-2 border-b border-slate-800 pb-3">
+                <span>📋</span> 學生成績表 (避碰規則)
+              </h4>
+              <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse text-xs">
+                  <thead>
+                    <tr class="border-b border-slate-800 text-slate-400 font-semibold bg-slate-950/40">
+                      <th class="py-2.5 px-3 text-center w-12">選擇</th>
+                      <th class="py-2.5 px-3">姓名</th>
+                      <th class="py-2.5 px-3 text-right">成績</th>
+                      <th class="py-2.5 px-3 text-center">狀態</th>
+                    </tr>
+                  </thead>
+                  <tbody class="divide-y divide-slate-800/60 text-slate-300">
+                    <tr class="hover:bg-slate-800/40 transition-colors">
+                      <td class="py-2.5 px-3 text-center">
+                        <input type="radio" name="selected-student" value="林小航" data-score="90" checked class="w-4 h-4 text-ocean-600 focus:ring-ocean-500 bg-slate-950 border-slate-800 cursor-pointer">
+                      </td>
+                      <td class="py-2.5 px-3 font-semibold text-slate-200">林小航</td>
+                      <td class="py-2.5 px-3 text-right font-bold text-slate-200">90</td>
+                      <td class="py-2.5 px-3 text-center">
+                        <span class="bg-emerald-950/60 border border-emerald-500/30 text-emerald-400 px-2 py-0.5 rounded text-[10px] font-bold">及格</span>
+                      </td>
+                    </tr>
+                    <tr class="hover:bg-slate-800/40 transition-colors">
+                      <td class="py-2.5 px-3 text-center">
+                        <input type="radio" name="selected-student" value="陳輪機" data-score="58" class="w-4 h-4 text-ocean-600 focus:ring-ocean-500 bg-slate-950 border-slate-800 cursor-pointer">
+                      </td>
+                      <td class="py-2.5 px-3 font-semibold text-slate-200">陳輪機</td>
+                      <td class="py-2.5 px-3 text-right font-bold text-rose-400">58</td>
+                      <td class="py-2.5 px-3 text-center">
+                        <span class="bg-rose-955/60 border border-rose-500/30 text-rose-400 px-2 py-0.5 rounded text-[10px] font-bold">不及格</span>
+                      </td>
+                    </tr>
+                    <tr class="hover:bg-slate-800/40 transition-colors">
+                      <td class="py-2.5 px-3 text-center">
+                        <input type="radio" name="selected-student" value="張避碰" data-score="95" class="w-4 h-4 text-ocean-600 focus:ring-ocean-500 bg-slate-950 border-slate-800 cursor-pointer">
+                      </td>
+                      <td class="py-2.5 px-3 font-semibold text-slate-200">張避碰</td>
+                      <td class="py-2.5 px-3 text-right font-bold text-slate-200">95</td>
+                      <td class="py-2.5 px-3 text-center">
+                        <span class="bg-emerald-950/60 border border-emerald-500/30 text-emerald-400 px-2 py-0.5 rounded text-[10px] font-bold">及格</span>
+                      </td>
+                    </tr>
+                    <tr class="hover:bg-slate-800/40 transition-colors">
+                      <td class="py-2.5 px-3 text-center">
+                        <input type="radio" name="selected-student" value="黃雷達" data-score="45" class="w-4 h-4 text-ocean-600 focus:ring-ocean-500 bg-slate-950 border-slate-800 cursor-pointer">
+                      </td>
+                      <td class="py-2.5 px-3 font-semibold text-slate-200">黃雷達</td>
+                      <td class="py-2.5 px-3 text-right font-bold text-rose-400">45</td>
+                      <td class="py-2.5 px-3 text-center">
+                        <span class="bg-rose-955/60 border border-rose-500/30 text-rose-400 px-2 py-0.5 rounded text-[10px] font-bold">不及格</span>
+                      </td>
+                    </tr>
+                    <tr class="hover:bg-slate-800/40 transition-colors">
+                      <td class="py-2.5 px-3 text-center">
+                        <input type="radio" name="selected-student" value="李法規" data-score="78" class="w-4 h-4 text-ocean-600 focus:ring-ocean-500 bg-slate-950 border-slate-800 cursor-pointer">
+                      </td>
+                      <td class="py-2.5 px-3 font-semibold text-slate-200">李法規</td>
+                      <td class="py-2.5 px-3 text-right font-bold text-slate-200">78</td>
+                      <td class="py-2.5 px-3 text-center">
+                        <span class="bg-emerald-950/60 border border-emerald-500/30 text-emerald-400 px-2 py-0.5 rounded text-[10px] font-bold">及格</span>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- Right: Chart.js Doughnut Chart (md:col-span-5) -->
+            <div class="md:col-span-5 bg-slate-900/60 border border-ocean-900/40 rounded-xl p-5 backdrop-blur-md shadow-xl flex flex-col items-center justify-center gap-4">
+              <h4 class="text-sm font-bold text-slate-200 flex items-center gap-2 border-b border-slate-800 pb-3 w-full">
+                <span>📈</span> 及格率分析
+              </h4>
+              <div class="w-full max-w-[160px] aspect-square relative flex items-center justify-center">
+                <canvas id="chart-pass-fail"></canvas>
+              </div>
+              <div class="flex justify-around w-full text-[10px] text-slate-400 font-semibold mt-2">
+                <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block"></span>及格: 3人 (60%)</span>
+                <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block"></span>不及格: 2人 (40%)</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- AI Parent-Teacher Letter Generator -->
+          <div class="bg-slate-900/60 border border-ocean-900/40 rounded-xl p-5 backdrop-blur-md shadow-xl flex flex-col gap-4">
+            <div class="border-b border-ocean-900/30 pb-3 flex items-center justify-between">
+              <h4 class="text-sm font-bold text-slate-200 flex items-center gap-2">
+                <span>✉️</span> AI 親師聯絡信生成器
+              </h4>
+              <span class="text-[10px] text-slate-400 bg-ocean-950 px-2 py-0.5 border border-ocean-800/30 rounded">班導師模式</span>
+            </div>
+            
+            <div class="flex flex-col sm:flex-row gap-4 items-center justify-between bg-slate-950/40 border border-ocean-950 rounded-xl p-4 shadow-inner">
+              <div class="text-xs text-slate-300">
+                目前選定學生: <strong id="selected-student-display" class="text-gold-400 text-sm">林小航</strong> (分數: <span id="selected-student-score" class="font-bold text-slate-100">90</span> 分)
+              </div>
+              <button id="btn-generate-letter" class="bg-gradient-to-r from-ocean-600 to-blue-700 hover:from-ocean-500 hover:to-blue-600 text-white font-bold py-2.5 px-6 rounded-lg text-xs transition-all active:scale-[0.98] shadow-md flex items-center gap-2 cursor-pointer whitespace-nowrap">
+                ✉️ 一鍵撰寫聯絡信
+              </button>
+            </div>
+
+            <!-- Letter Output Area -->
+            <div id="letter-output-card" class="hidden flex-col gap-3">
+              <div class="relative bg-slate-950/80 border border-ocean-900/30 rounded-xl p-4.5 shadow-inner">
+                <div class="text-[10px] font-bold text-gold-500 mb-2 flex items-center justify-between">
+                  <span>📝 生成的聯絡信內容：</span>
+                  <button onclick="copyLetterText()" class="text-[10px] text-ocean-400 hover:text-ocean-300 hover:underline cursor-pointer">📋 複製內容</button>
+                </div>
+                <textarea id="letter-textarea" class="w-full bg-transparent text-xs text-slate-200 leading-relaxed border-none focus:outline-none resize-y min-h-[160px] font-sans" readonly></textarea>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- Moving waves background decoration -->
+  <div class="w-full h-12 bg-transparent overflow-hidden absolute bottom-0 left-0 pointer-events-none select-none z-0">
+    <svg class="w-full h-full text-ocean-950/50" viewBox="0 0 1440 74" fill="currentColor" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M0,32L60,26.7C120,21,240,11,360,16C480,21,600,43,720,48C840,53,960,43,1080,32C1200,21,1320,11,1380,5.3L1440,0L1440,74L1380,74C1320,74,1200,74,1080,74C960,74,840,74,720,74C600,74,480,74,360,74C240,74,120,74,60,74L0,74Z"></path>
+    </svg>
+  </div>
+
+  <!-- Footer -->
+  <footer class="w-full text-center py-6 text-xs text-slate-500 z-10 border-t border-slate-900/60 mt-auto bg-slate-950/40">
+    <p>© 2026 國立台南海事航海科. All Rights Reserved. | 系統維護: 陳文舟 老師</p>
+  </footer>
+
+  <!-- Page Logic Scripts -->
+  <script>
+    // ==========================================
+    // 講師預設免填金鑰設定區 (分享給學生免填 Key)
+    // 老師可在下方引號中填入您的金鑰，學生打開網頁即可免輸入直接使用。
+    // ==========================================
+    const TEACHER_GROQ_KEY = ""; 
+    const TEACHER_GEMINI_KEY = ""; 
+
+    // PDF.js Worker Configuration
+    if (window.pdfjsLib) {
+      pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+    }
+
+    // Default presets for Maritime Laws
+    const presets = {
+      collision: `國際海上避碰規則第十三條（追越）：
+一、不論本條第二款及第三款中之各項規定如何，任何船舶追越他船時，均應避讓被追越船。
+二、一船自他船正橫後大於二十二點五度之方向追越他船時，即處於追越位置。也就是說在夜間僅能看見被追越船之尾燈，而看不見其兩舷燈之位置。
+三、如一船對其是否在追越他船有任何懷疑時，該船應假定其係在追越中，並應採取避讓行動。`,
+      safety: `船員執業安全與衛生守則草案：
+第一條：船員在船工作時，應隨時注意自身安全，並穿戴適當之個人防護裝備。
+第二條：在進行高空或舷外作業時，應確實繫妥安全帶與安全繩，並有專人在旁監視防護。
+第三條：進入密閉空間前，必須進行氣體檢測並實施通風，確認氧氣濃度高於18%且無有毒氣體殘留後，方可進入作業。`
+    };
+
+    // Segment the full regulations text into individual rules/paragraphs
+    function chunkText(text) {
+      const lines = text.split('\n');
+      const chunks = [];
+      let currentChunk = "";
+      
+      for (let line of lines) {
+        const trimmed = line.trim();
+        if (!trimmed) continue;
+        
+        // Match line starting with (number), e.g., (1) or (264)
+        if (/^\(\d+\)/.test(trimmed)) {
+          if (currentChunk) {
+            chunks.push(currentChunk);
+          }
+          currentChunk = line;
+        } else {
+          if (currentChunk) {
+            currentChunk += "\n" + line;
+          } else {
+            currentChunk = line;
+          }
+        }
+      }
+      if (currentChunk) {
+        chunks.push(currentChunk);
+      }
+      return chunks;
+    }
+
+    // Retrieve top N relevant chunks using character and bigram overlap scoring
+    function retrieveRelevantChunks(query, chunks, topN = 5) {
+      if (chunks.length <= topN) return chunks;
+
+      const cleanQuery = query.toLowerCase().replace(/[.,\/#!$%\^&\*;:{}=\-_`~()？。，、！]/g, "").trim();
+      if (!cleanQuery) return chunks.slice(0, topN);
+
+      const scores = chunks.map((chunk, idx) => {
+        const chunkLower = chunk.toLowerCase();
+        let score = 0;
+        
+        // Exact substring match bonus
+        if (chunkLower.includes(cleanQuery)) {
+          score += 100;
+        }
+        
+        // Character overlap scoring
+        const queryChars = Array.from(cleanQuery);
+        let matchCount = 0;
+        const uniqueChars = new Set(queryChars);
+        uniqueChars.forEach(char => {
+          if (chunkLower.includes(char)) {
+            matchCount++;
+          }
+        });
+        
+        if (uniqueChars.size > 0) {
+          score += (matchCount / uniqueChars.size) * 30;
+        }
+        
+        // Bigram overlap scoring
+        for (let i = 0; i < cleanQuery.length - 1; i++) {
+          const bigram = cleanQuery.substring(i, i + 2);
+          if (chunkLower.includes(bigram)) {
+            score += 15;
+          }
+        }
+        
+        return { chunk, score, index: idx };
+      });
+
+      // Sort descending
+      scores.sort((a, b) => b.score - a.score);
+      
+      // Filter out chunks with 0 score, but always return at least some candidates if all are 0
+      const activeMatches = scores.filter(item => item.score > 0);
+      const candidates = activeMatches.length > 0 ? activeMatches : scores;
+      
+      return candidates.slice(0, topN).map(item => item.chunk);
+    }
+
+    // System Prompts for different tones
+    const tonePrompts = {
+      captain: "請扮演一個「親切且擅長白話比喻的資深老船長」。你說話時要用老船長的口氣（自稱『老船長我』），多用白話的航海事物（如風浪、避風港、扯帆、下錨、拉網等）來作比喻說明法規。態度親切有活力。請根據下方的【參考法規內容】來解答使用者問題，回答中必須明確引用法規法條內容。",
+      judge: "請扮演一個「嚴謹負責、條理分明的海事法規法官」。你說話時要理智、客觀、邏輯嚴密，多用『本院見解』、『依據該條文之意旨』等法律專業詞彙。請根據下方的【參考法規內容】來解答使用者問題，回答中必須嚴格且明確引用法規法條內容。",
+      teacher: "請扮演一個「耐心溫柔、循循善誘的陳文舟老師」。你說話時要溫柔有耐心，稱呼使用者為『各位同學』，常說『這在考試是必考題喔』、『大家開船出海一定要注意安全』。請根據下方的【參考法規內容】來解答使用者問題，回答中必須明確引用法規法條內容。"
+    };
+
+    // Global variable to hold the law database text
+    window.lawText = window.lawText || "";
+
+    // Fetch law.txt from local workspace, falling back to presets
+    async function loadLawText() {
+      // 1. Prioritize static variable from law.js to bypass file:// CORS restrictions
+      if (window.lawText) {
+        showToast('已成功從本地 script 載入法規知識庫 (背景運行)！', 'success');
+        return;
+      }
+
+      try {
+        const response = await fetch('law.txt');
+        if (!response.ok) {
+          throw new Error('未找到 law.txt 檔案。');
+        }
+        window.lawText = await response.text();
+        showToast('已成功從同目錄載入《law.txt》法規知識庫 (背景運行)！', 'success');
+      } catch (err) {
+        console.warn(err.message);
+        // Fallback to presets collision rules if everything else fails
+        window.lawText = presets.collision;
+        showToast('載入 law.txt 失敗。系統已載入預設「避碰規則」背景知識庫！', 'info');
+      }
+    }
+
+
+    // Call Groq to parse natural language bookkeeping text
+    async function addLedgerEntryAI() {
+      const inputEl = document.getElementById('ledger-input');
+      const btnEl = document.getElementById('btn-ledger-ai');
+      if (!inputEl || !btnEl) return;
+
+      const userText = inputEl.value.trim();
+      if (!userText) {
+        showToast('請先輸入記帳內容，例如：買飲料花 50 元', 'error');
+        return;
+      }
+
+      // Check Groq Key (fallback to teacher's preset key)
+      const apiKey = sessionStorage.getItem('groq_api_key') || TEACHER_GROQ_KEY;
+      if (!apiKey) {
+        showToast('警告：請先在左側卡片輸入 Groq 主要大腦金鑰並確認啟用！', 'error');
+        return;
+      }
+
+      // Set Loading State
+      const originalBtnHtml = btnEl.innerHTML;
+      btnEl.disabled = true;
+      btnEl.innerHTML = '<span>⏳</span> AI 辨識中...';
+      inputEl.disabled = true;
+
+      const systemPrompt = `你是一個收支記帳解析助理。請將使用者的對話解析成記帳資訊。
+你必須「僅」回傳一個 JSON 物件，格式如下：
+{"item": "實際的項目名稱", "type": "收入" | "支出", "amount": 數字}
+
+注意事項：
+1. "item" 必須是從使用者輸入中提取的「具體項目或消費名稱」（例如："收班費"、"買粉筆"、"買飲料"），千萬不要直接回傳 "項目名稱"、"string" 或 "實際的項目名稱" 這些佔位文字！
+2. "type" 必須是 "收入" 或 "支出" 二者之一。
+3. "amount" 必須是一個正數（整數或浮點數）。
+4. 不要包含任何 markdown 標記（如 \`\`\`json），也不要寫任何解釋文字，只輸出 JSON 字串。`;
+
+      try {
+        const responseText = await callGroqAPI(userText, systemPrompt, apiKey);
+        let cleanJson = responseText.trim();
+        
+        // Clean markdown code blocks if any
+        if (cleanJson.startsWith("```")) {
+          cleanJson = cleanJson.replace(/^```[a-zA-Z]*\n/, "");
+          cleanJson = cleanJson.replace(/\n```$/, "");
+          cleanJson = cleanJson.trim();
+        }
+
+        const data = JSON.parse(cleanJson);
+        if (!data.item || !data.type || data.amount === undefined) {
+          throw new Error('AI 回傳的格式不完整');
+        }
+
+        // Get current time
+        const now = new Date();
+        const timeStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')} ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+
+        // Create entry
+        const entry = {
+          time: timeStr,
+          item: data.item,
+          type: data.type === "收入" ? "收入" : "支出",
+          amount: Math.abs(Number(data.amount)) || 0
+        };
+
+        // Save to localStorage
+        const entries = JSON.parse(localStorage.getItem('ledger_entries') || '[]');
+        entries.push(entry);
+        localStorage.setItem('ledger_entries', JSON.stringify(entries));
+
+        // Render table & clear input
+        renderLedgerTable();
+        inputEl.value = '';
+        showToast(`已成功記帳：${entry.item} (${entry.type}) ${entry.amount} 元！`, 'success');
+
+      } catch (err) {
+        console.error(err);
+        showToast(`AI 記帳辨識失敗：${err.message}`, 'error');
+      } finally {
+        btnEl.disabled = false;
+        btnEl.innerHTML = originalBtnHtml;
+        inputEl.disabled = false;
+      }
+    }
+
+    // Render bookkeeping records
+    function renderLedgerTable() {
+      const rowsEl = document.getElementById('ledger-rows');
+      if (!rowsEl) return;
+
+      const entries = JSON.parse(localStorage.getItem('ledger_entries') || '[]');
+      if (entries.length === 0) {
+        rowsEl.innerHTML = `
+          <tr>
+            <td colspan="5" class="py-8 text-center text-slate-500 italic">尚無記帳紀錄，請在上方輸入日常對話以開始記帳。</td>
+          </tr>
+        `;
+        return;
+      }
+
+      let currentBalance = 0;
+      let html = "";
+      entries.forEach(entry => {
+        if (entry.type === "收入") {
+          currentBalance += entry.amount;
+        } else {
+          currentBalance -= entry.amount;
+        }
+
+        const typeBadge = entry.type === "收入" 
+          ? `<span class="bg-emerald-950/80 border border-emerald-800/40 text-emerald-400 px-2 py-0.5 rounded text-[10px] font-bold">收入</span>`
+          : `<span class="bg-rose-955/80 border border-rose-900/40 text-rose-400 px-2 py-0.5 rounded text-[10px] font-bold">支出</span>`;
+
+        const amountClass = entry.type === "收入" ? "text-emerald-400 font-bold" : "text-rose-400 font-bold";
+        const amountPrefix = entry.type === "收入" ? "+" : "-";
+
+        html += `
+          <tr class="hover:bg-slate-800/40 transition-colors border-b border-slate-800/40">
+            <td class="py-3 px-3 text-slate-400 whitespace-nowrap">${entry.time}</td>
+            <td class="py-3 px-3 font-semibold text-slate-200">${entry.item}</td>
+            <td class="py-3 px-3 text-center">${typeBadge}</td>
+            <td class="py-3 px-3 text-right ${amountClass}">${amountPrefix}${entry.amount}</td>
+            <td class="py-3 px-3 text-right text-slate-300 font-semibold">${currentBalance}</td>
+          </tr>
+        `;
+      });
+
+      rowsEl.innerHTML = html;
+    }
+
+    // Clear ledger entries
+    function clearLedger() {
+      localStorage.removeItem('ledger_entries');
+      renderLedgerTable();
+      showToast("已成功清除所有記帳紀錄！", "info");
+    }
+
+    // Tabs Switch Logic
+    function switchTab(tabName) {
+      const tabLedgerBtn = document.getElementById('tab-ledger-btn');
+      const tabChatBtn = document.getElementById('tab-chat-btn');
+      const tabQuizBtn = document.getElementById('tab-quiz-btn');
+      const tabAdminBtn = document.getElementById('tab-admin-btn');
+      const tabLedgerContent = document.getElementById('tab-ledger-content');
+      const tabChatContent = document.getElementById('tab-chat-content');
+      const tabQuizContent = document.getElementById('tab-quiz-content');
+      const tabAdminContent = document.getElementById('tab-admin-content');
+      
+      if (!tabLedgerBtn || !tabChatBtn || !tabQuizBtn || !tabAdminBtn || !tabLedgerContent || !tabChatContent || !tabQuizContent || !tabAdminContent) return;
+      
+      // Hide all contents
+      tabChatContent.classList.add('hidden');
+      tabChatContent.classList.remove('flex');
+      tabLedgerContent.classList.add('hidden');
+      tabLedgerContent.classList.remove('flex');
+      tabQuizContent.classList.add('hidden');
+      tabQuizContent.classList.remove('flex');
+      tabAdminContent.classList.add('hidden');
+      tabAdminContent.classList.remove('flex');
+      
+      // Reset button styles
+      tabChatBtn.className = "pb-3 text-sm font-bold text-ocean-400 border-b-2 border-transparent transition-all hover:text-ocean-200 flex items-center gap-2 cursor-pointer";
+      tabLedgerBtn.className = "pb-3 text-sm font-bold text-ocean-400 border-b-2 border-transparent transition-all hover:text-ocean-200 flex items-center gap-2 cursor-pointer";
+      tabQuizBtn.className = "pb-3 text-sm font-bold text-ocean-400 border-b-2 border-transparent transition-all hover:text-ocean-200 flex items-center gap-2 cursor-pointer";
+      tabAdminBtn.className = "pb-3 text-sm font-bold text-ocean-400 border-b-2 border-transparent transition-all hover:text-ocean-200 flex items-center gap-2 cursor-pointer";
+
+      // Activate selected
+      if (tabName === 'ledger') {
+        tabLedgerContent.classList.remove('hidden');
+        tabLedgerContent.classList.add('flex');
+        tabLedgerBtn.className = "pb-3 text-sm font-bold text-ocean-100 border-b-2 border-ocean-500 transition-all flex items-center gap-2 cursor-pointer";
+      } else if (tabName === 'quiz') {
+        tabQuizContent.classList.remove('hidden');
+        tabQuizContent.classList.add('flex');
+        tabQuizBtn.className = "pb-3 text-sm font-bold text-ocean-100 border-b-2 border-ocean-500 transition-all flex items-center gap-2 cursor-pointer";
+      } else if (tabName === 'admin') {
+        tabAdminContent.classList.remove('hidden');
+        tabAdminContent.classList.add('flex');
+        tabAdminBtn.className = "pb-3 text-sm font-bold text-ocean-100 border-b-2 border-ocean-500 transition-all flex items-center gap-2 cursor-pointer";
+        setTimeout(initAdminChart, 50); // Small delay to ensure display flex is rendered so canvas sizing is correct
+      } else {
+        tabChatContent.classList.remove('hidden');
+        tabChatContent.classList.add('flex');
+        tabChatBtn.className = "pb-3 text-sm font-bold text-ocean-100 border-b-2 border-ocean-500 transition-all flex items-center gap-2 cursor-pointer";
+      }
+    }
+
+    // Quiz generator logic
+    let currentQuizData = [];
+    let quizAnswers = [null, null, null];
+
+    async function generateQuiz() {
+      const btnEl = document.getElementById('btn-generate-quiz');
+      const loadingEl = document.getElementById('quiz-loading');
+      const quizArea = document.getElementById('quiz-area');
+      const resultEl = document.getElementById('quiz-result');
+      
+      if (!btnEl || !loadingEl || !quizArea || !resultEl) return;
+
+      // Reset states
+      quizAnswers = [null, null, null];
+      quizArea.innerHTML = "";
+      resultEl.classList.add('hidden');
+      resultEl.classList.remove('flex');
+
+      // Check key based on active brain (fallback to teacher's preset key)
+      const brainSelect = document.getElementById('select-brain');
+      const activeBrain = brainSelect ? brainSelect.value : 'groq';
+      let apiKey = "";
+      if (activeBrain === 'groq') {
+        apiKey = sessionStorage.getItem('groq_api_key') || TEACHER_GROQ_KEY;
+        if (!apiKey) {
+          showToast('警告：請先在左側卡片輸入 Groq 主要大腦金鑰並確認啟用！', 'error');
+          return;
+        }
+      } else {
+        apiKey = sessionStorage.getItem('gemini_api_key') || TEACHER_GEMINI_KEY;
+        if (!apiKey) {
+          showToast('警告：請先在左側卡片輸入 Gemini 備用大腦金鑰並確認啟用！', 'error');
+          return;
+        }
+      }
+
+      // Show loading state
+      btnEl.disabled = true;
+      loadingEl.classList.remove('hidden');
+      loadingEl.classList.add('flex');
+
+      const ragContext = (window.lawText || "").trim();
+      if (!ragContext) {
+        showToast('法規知識庫尚未就緒，請重試或確認 law.txt 是否載入。', 'error');
+        btnEl.disabled = false;
+        loadingEl.classList.add('hidden');
+        loadingEl.classList.remove('flex');
+        return;
+      }
+
+      // Sample 5 random chunks from the background laws to stay within TPM rate limits and dynamically generate unique quizzes
+      const chunks = chunkText(ragContext);
+      const randomChunks = [];
+      if (chunks.length > 5) {
+        const shuffled = [...chunks].sort(() => 0.5 - Math.random());
+        randomChunks.push(...shuffled.slice(0, 5));
+      } else {
+        randomChunks.push(...chunks);
+      }
+      const sourceContext = randomChunks.join("\n\n");
+
+      const systemPrompt = `你是一位資深的海事科出題教授。請分析使用者給定的海事法規內容，並設計 3 題難度適中、符合航海士檢定規格的「四選一單選題」。
+請嚴格且僅以 JSON 陣列格式回傳，格式如下：
+[
+  {
+    "question": "問題文字...",
+    "options": ["選項A", "選項B", "選項C", "選項D"],
+    "correctIndex": 0, // 正確選項的索引 (0代表第一個選項，1代表第二個，以此類推)
+    "explanation": "白話詳細解析..."
+  },
+  ...
+]
+
+注意事項：
+1. 必須出滿剛好 3 題。
+2. 題目與選項必須為繁體中文。
+3. "correctIndex" 必須是 0、1、2、3 中的一個整數。
+4. "explanation" 必須是簡明且白話的解析，說明為何該選項是正確的。
+5. 不要包含任何 markdown 標記（如 \`\`\`json ），不要寫 any 解釋文字，只輸出 JSON 陣列字串。`;
+
+      try {
+        let responseText = "";
+        if (activeBrain === 'groq') {
+          responseText = await callGroqAPI(sourceContext, systemPrompt, apiKey);
+        } else {
+          responseText = await callGeminiAPI(sourceContext, systemPrompt, apiKey);
+        }
+
+        let cleanJson = responseText.trim();
+        if (cleanJson.startsWith("```")) {
+          cleanJson = cleanJson.replace(/^```[a-zA-Z]*\n/, "");
+          cleanJson = cleanJson.replace(/\n```$/, "");
+          cleanJson = cleanJson.trim();
+        }
+
+        currentQuizData = JSON.parse(cleanJson);
+        if (!Array.isArray(currentQuizData) || currentQuizData.length !== 3) {
+          throw new Error('回傳題目數量不正確');
+        }
+
+        renderQuizQuestions();
+        showToast('隨堂測驗已成功生成！快來挑戰吧！', 'success');
+
+      } catch (err) {
+        console.error(err);
+        showToast(`測驗生成失敗：${err.message}`, 'error');
+      } finally {
+        btnEl.disabled = false;
+        loadingEl.classList.add('hidden');
+        loadingEl.classList.remove('flex');
+      }
+    }
+
+    // Render generated questions
+    function renderQuizQuestions() {
+      const quizArea = document.getElementById('quiz-area');
+      if (!quizArea) return;
+
+      let html = "";
+      currentQuizData.forEach((q, qIdx) => {
+        let optionsHtml = "";
+        q.options.forEach((opt, optIdx) => {
+          optionsHtml += `
+            <button type="button" onclick="selectOption(${qIdx}, ${optIdx}, this)" 
+              class="quiz-option-btn-${qIdx} w-full text-left bg-slate-955/50 hover:bg-slate-900 border border-ocean-900/40 hover:border-ocean-700/60 rounded-xl px-4 py-3 text-xs text-slate-200 focus:outline-none transition-all active:scale-[0.99] cursor-pointer flex items-center">
+              <span class="inline-block w-5 h-5 rounded-full bg-slate-800 text-[10px] font-bold text-slate-300 text-center leading-5 mr-3 flex-shrink-0">
+                ${String.fromCharCode(65 + optIdx)}
+              </span>
+              <span>${opt}</span>
+            </button>
+          `;
+        });
+
+        html += `
+          <div class="bg-slate-900/60 border border-ocean-900/40 rounded-xl p-5 backdrop-blur-md shadow-xl flex flex-col gap-4" id="quiz-card-${qIdx}">
+            <div class="flex items-center justify-between pb-2 border-b border-slate-800">
+              <span class="text-xs font-bold text-ocean-400">第 ${qIdx + 1} 題</span>
+              <span class="text-[10px] text-slate-500 bg-slate-950 px-2 py-0.5 border border-ocean-900/20 rounded">單選題</span>
+            </div>
+            <h5 class="text-xs font-bold text-slate-100 leading-relaxed">${q.question}</h5>
+            
+            <div class="flex flex-col gap-2.5 mt-1">
+              ${optionsHtml}
+            </div>
+            
+            <!-- Explanation Card (initially hidden) -->
+            <div id="quiz-explanation-${qIdx}" class="hidden bg-slate-950/60 border border-ocean-950/60 rounded-lg p-4 mt-2 transition-all">
+              <p class="text-[10px] font-bold text-gold-500">📖 出題教授白話解析：</p>
+              <p class="text-[11px] text-slate-300 leading-relaxed mt-1 whitespace-pre-wrap">${q.explanation}</p>
+            </div>
+          </div>
+        `;
+      });
+
+      quizArea.innerHTML = html;
+    }
+
+    // Select Quiz Option
+    function selectOption(qIdx, optionIdx, btnEl) {
+      if (quizAnswers[qIdx] !== null) return; // Already answered
+
+      quizAnswers[qIdx] = optionIdx;
+      const question = currentQuizData[qIdx];
+      const correctIdx = question.correctIndex;
+
+      // Disable all buttons for this question
+      const optionButtons = document.querySelectorAll(`.quiz-option-btn-${qIdx}`);
+      optionButtons.forEach(btn => {
+        btn.disabled = true;
+        btn.classList.add('cursor-not-allowed', 'opacity-55');
+      });
+
+      if (optionIdx === correctIdx) {
+        // Correct Answer
+        btnEl.classList.remove('bg-slate-955/50', 'border-ocean-900/40', 'opacity-55');
+        btnEl.classList.add('bg-emerald-950/70', 'border-emerald-500/50', 'text-emerald-300', 'opacity-100');
+        triggerGreenFireworks(btnEl);
+      } else {
+        // Incorrect Answer
+        btnEl.classList.remove('bg-slate-955/50', 'border-ocean-900/40', 'opacity-55');
+        btnEl.classList.add('bg-rose-955/70', 'border-rose-500/50', 'text-rose-300', 'opacity-100');
+
+        // Highlight correct option in green
+        const correctBtn = optionButtons[correctIdx];
+        correctBtn.classList.remove('opacity-55');
+        correctBtn.classList.add('bg-emerald-950/70', 'border-emerald-500/50', 'text-emerald-300', 'opacity-100');
+      }
+
+      // Show explanation
+      const explEl = document.getElementById(`quiz-explanation-${qIdx}`);
+      if (explEl) {
+        explEl.classList.remove('hidden');
+        explEl.classList.add('block');
+      }
+
+      // Check if finished
+      if (quizAnswers.every(ans => ans !== null)) {
+        showQuizScore();
+      }
+    }
+
+    // Show quiz score summary
+    function showQuizScore() {
+      let score = 0;
+      for (let i = 0; i < 3; i++) {
+        if (quizAnswers[i] === currentQuizData[i].correctIndex) {
+          score++;
+        }
+      }
+
+      const resultEl = document.getElementById('quiz-result');
+      const scoreNumEl = document.getElementById('quiz-score-num');
+      const feedbackEl = document.getElementById('quiz-score-feedback');
+      
+      if (!resultEl || !scoreNumEl || !feedbackEl) return;
+
+      scoreNumEl.textContent = score;
+
+      let feedback = "";
+      if (score === 3) {
+        feedback = "🎉 滿分！太優秀了！您對海事法規瞭若指掌，是位稱職的船長！";
+      } else if (score === 2) {
+        feedback = "👍 很不錯！答對了大部分的法規，對海勤工作有良好的理解！";
+      } else if (score === 1) {
+        feedback = "⚓ 再接再厲！建議可以多加閱讀法規知識庫，加油！";
+      } else {
+        feedback = "⚓ 加油！開船出海安全第一，建議多參考法規精華喔！";
+      }
+      feedbackEl.textContent = feedback;
+
+      resultEl.classList.remove('hidden');
+      resultEl.classList.add('flex');
+
+      resultEl.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    // Re-challenge / Reset Quiz
+    function restartQuiz() {
+      generateQuiz();
+    }
+
+    // Spark green particles using Web Animations API
+    function triggerGreenFireworks(element) {
+      const rect = element.getBoundingClientRect();
+      const container = document.body;
+      const colors = ['#10b981', '#34d399', '#6ee7b7', '#a7f3d0'];
+      
+      for (let i = 0; i < 30; i++) {
+        const p = document.createElement('div');
+        p.className = 'fixed pointer-events-none z-50 rounded-full';
+        p.style.width = Math.random() * 8 + 4 + 'px';
+        p.style.height = p.style.width;
+        p.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+        
+        const x = rect.left + rect.width / 2;
+        const y = rect.top + rect.height / 2;
+        p.style.left = x + 'px';
+        p.style.top = y + 'px';
+        
+        const angle = Math.random() * Math.PI * 2;
+        const speed = Math.random() * 80 + 40;
+        const vx = Math.cos(angle) * speed;
+        const vy = Math.sin(angle) * speed;
+        
+        container.appendChild(p);
+        
+        p.animate([
+          { transform: 'translate(0, 0) scale(1)', opacity: 1 },
+          { transform: `translate(${vx}px, ${vy}px) scale(0)`, opacity: 0 }
+        ], {
+          duration: Math.random() * 600 + 400,
+          easing: 'cubic-bezier(0.1, 0.8, 0.3, 1)',
+          fill: 'forwards'
+        });
+        
+        setTimeout(() => p.remove(), 1000);
+      }
+    }
+
+    // Update brain badge on dropdown selection change
+    function onBrainChange() {
+      const brainSelect = document.getElementById('select-brain');
+      const activeBrainBadge = document.getElementById('active-brain-badge');
+      if (brainSelect && activeBrainBadge) {
+        if (brainSelect.value === 'groq') {
+          activeBrainBadge.textContent = 'Groq Llama 3';
+        } else {
+          activeBrainBadge.textContent = 'Gemini 2.5 Flash';
+        }
+      }
+    }
+
+    // Call Groq Chat Completions API
+    async function callGroqAPI(prompt, systemPrompt, apiKey) {
+      const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${apiKey}`
+        },
+        body: JSON.stringify({
+          model: 'llama-3.1-8b-instant',
+          messages: [
+            { role: 'system', content: systemPrompt },
+            { role: 'user', content: prompt }
+          ],
+          temperature: 0.7
+        })
+      });
+      
+      if (!response.ok) {
+        const errData = await response.json().catch(() => ({}));
+        throw new Error(errData.error?.message || `HTTP 錯誤 ${response.status}`);
+      }
+      
+      const data = await response.json();
+      return data.choices[0].message.content;
+    }
+
+    // Call Google Gemini GenerateContent API
+    async function callGeminiAPI(prompt, systemPrompt, apiKey) {
+      const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          contents: [
+            {
+              parts: [
+                { text: `${systemPrompt}\n\n使用者提問：${prompt}` }
+              ]
+            }
+          ],
+          generationConfig: {
+            temperature: 0.7
+          }
+        })
+      });
+
+      if (!response.ok) {
+        const errData = await response.json().catch(() => ({}));
+        throw new Error(errData.error?.message || `HTTP 錯誤 ${response.status}`);
+      }
+
+      const data = await response.json();
+      return data.candidates[0].content.parts[0].text;
+    }
+
+    // Toast Notification System
+    function showToast(message, type = 'success') {
+      const container = document.getElementById('toast-container');
+      if (!container) return;
+
+      const toast = document.createElement('div');
+      toast.className = `pointer-events-auto bg-slate-900/95 border-l-4 p-4 rounded-xl shadow-2xl flex items-center gap-3 transition-all duration-500 ease-out transform translate-x-full opacity-0 max-w-sm backdrop-blur-md`;
+      
+      let borderClass = 'border-emerald-500';
+      let icon = '🟢';
+      
+      if (type === 'error') {
+        borderClass = 'border-rose-500';
+        icon = '🔴';
+      } else if (type === 'info') {
+        borderClass = 'border-blue-500';
+        icon = '🔵';
+      }
+      
+      toast.classList.add(borderClass);
+
+      toast.innerHTML = `
+        <span class="text-lg">${icon}</span>
+        <div class="flex-grow">
+          <p class="text-xs text-slate-300 font-semibold leading-relaxed">${message}</p>
+        </div>
+        <button class="text-slate-500 hover:text-slate-300 text-xs font-bold ml-2 focus:outline-none">✕</button>
+      `;
+
+      toast.querySelector('button').addEventListener('click', () => {
+        toast.classList.add('translate-x-full', 'opacity-0');
+        setTimeout(() => toast.remove(), 500);
+      });
+
+      container.appendChild(toast);
+
+      requestAnimationFrame(() => {
+        toast.classList.remove('translate-x-full', 'opacity-0');
+      });
+
+      setTimeout(() => {
+        if (toast.parentNode) {
+          toast.classList.add('translate-x-full', 'opacity-0');
+          setTimeout(() => toast.remove(), 500);
+        }
+      }, 3500);
+    }
+
+    // Toggle Password Input Visibility
+    function togglePasswordVisibility(inputId, btn) {
+      const input = document.getElementById(inputId);
+      if (!input) return;
+      if (input.type === 'password') {
+        input.type = 'text';
+        btn.textContent = '🙈';
+      } else {
+        input.type = 'password';
+        btn.textContent = '👁️';
+      }
+    }
+
+    // Check key status and update UI
+    function updateSystemStatus() {
+      const groqKey = sessionStorage.getItem('groq_api_key') || TEACHER_GROQ_KEY;
+      const geminiKey = sessionStorage.getItem('gemini_api_key') || TEACHER_GEMINI_KEY;
+      const ping = document.getElementById('status-ping');
+      const dot = document.getElementById('status-dot');
+      const text = document.getElementById('status-text');
+      
+      const panelLocked = document.getElementById('panel-locked');
+      const panelUnlocked = document.getElementById('panel-unlocked');
+
+      const chatInput = document.getElementById('chat-input');
+      const chatSend = document.getElementById('chat-send');
+
+      // Pre-fill input placeholders if teacher keys are preset
+      const groqInput = document.getElementById('groq-key');
+      const geminiInput = document.getElementById('gemini-key');
+      
+      // Toggle teacher preset banner
+      const presetBanner = document.getElementById('teacher-preset-banner');
+      if (presetBanner) {
+        if (TEACHER_GROQ_KEY && !sessionStorage.getItem('groq_api_key')) {
+          presetBanner.classList.remove('hidden');
+        } else {
+          presetBanner.classList.add('hidden');
+        }
+      }
+      if (groqInput && !sessionStorage.getItem('groq_api_key') && TEACHER_GROQ_KEY) {
+        groqInput.placeholder = "已啟用陳文舟老師的預設大腦金鑰 🔑";
+      } else if (groqInput) {
+        groqInput.placeholder = "輸入 gsk_ 開頭的 API 金鑰...";
+      }
+      if (geminiInput && !sessionStorage.getItem('gemini_api_key') && TEACHER_GEMINI_KEY) {
+        geminiInput.placeholder = "已啟用陳文舟老師的備用大腦金鑰 🔑";
+      } else if (geminiInput) {
+        geminiInput.placeholder = "輸入 AIzaSy 開頭的 API 金鑰...";
+      }
+
+      if (groqKey && groqKey.trim() !== '') {
+        ping.className = "animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 bg-emerald-400";
+        dot.className = "relative inline-flex rounded-full h-3.5 w-3.5 bg-emerald-500";
+        text.textContent = "Ready";
+        text.className = "text-sm font-black tracking-wide text-emerald-400";
+        
+        panelLocked.classList.add('hidden');
+        panelUnlocked.classList.remove('hidden');
+        panelUnlocked.classList.add('flex');
+
+        if (chatInput && chatSend) {
+          chatInput.disabled = false;
+          chatInput.placeholder = "輸入您的航海法規問題... (例如：追越、避碰、陳文舟)";
+          chatSend.disabled = false;
+          chatSend.className = "bg-ocean-600 hover:bg-ocean-500 active:scale-95 text-white font-bold px-6 py-3 rounded-lg text-xs transition-all duration-200 cursor-pointer shadow-md";
+        }
+      } else {
+        ping.className = "animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 bg-rose-400";
+        dot.className = "relative inline-flex rounded-full h-3.5 w-3.5 bg-rose-500";
+        text.textContent = "Offline";
+        text.className = "text-sm font-black tracking-wide text-rose-500";
+        
+        panelUnlocked.classList.add('hidden');
+        panelUnlocked.classList.remove('flex');
+        panelLocked.classList.remove('hidden');
+
+        if (chatInput && chatSend) {
+          chatInput.disabled = true;
+          chatInput.value = '';
+          chatInput.placeholder = "請在左側配置金鑰以啟用對話...";
+          chatSend.disabled = true;
+          chatSend.className = "bg-slate-800 text-slate-500 font-bold px-6 py-3 rounded-lg text-xs transition-all duration-200 disabled:cursor-not-allowed";
+        }
+      }
+    }
+
+    // Chat Sending & RAG API Core Logic
+    async function handleSendMessage() {
+      const chatInput = document.getElementById('chat-input');
+      const chatMessages = document.getElementById('chat-messages');
+      const brainSelect = document.getElementById('select-brain');
+      const toneSelect = document.getElementById('select-tone');
+      
+      if (!chatInput || !chatMessages || !brainSelect || !toneSelect) return;
+
+      const userText = chatInput.value.trim();
+      if (!userText) return;
+
+      const activeBrain = brainSelect.value;
+      const activeTone = toneSelect.value;
+      
+      // 1. Check API Key (fallback to teacher's preset key)
+      let apiKey = "";
+      if (activeBrain === 'groq') {
+        apiKey = sessionStorage.getItem('groq_api_key') || TEACHER_GROQ_KEY;
+        if (!apiKey) {
+          showToast('警告：您已選擇「Groq Llama 3」，請先在左側卡片輸入 Groq 金鑰並確認啟用！', 'error');
+          return;
+        }
+      } else {
+        apiKey = sessionStorage.getItem('gemini_api_key') || TEACHER_GEMINI_KEY;
+        if (!apiKey) {
+          showToast('警告：您已選擇「Gemini 2.5 Flash」，請先在左側卡片輸入 Gemini 金鑰並確認啟用！', 'error');
+          return;
+        }
+      }
+
+      // 2. Append User message bubble
+      const userBubble = document.createElement('div');
+      userBubble.className = 'flex gap-2 justify-end';
+      userBubble.innerHTML = `
+        <div class="bg-ocean-600/70 border border-ocean-500/40 px-3.5 py-2 rounded-xl text-xs text-slate-100 max-w-[85%] leading-relaxed shadow-md">
+          ${userText}
+        </div>
+        <div class="w-8 h-8 rounded-full bg-gold-500 text-xs font-bold flex items-center justify-center flex-shrink-0 text-slate-900 shadow-md">⚓</div>
+      `;
+      chatMessages.appendChild(userBubble);
+      chatInput.value = '';
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+
+      // 3. Append Typing Indicator
+      const typingBubble = document.createElement('div');
+      typingBubble.className = 'flex gap-2';
+      typingBubble.innerHTML = `
+        <div class="w-8 h-8 rounded-full bg-ocean-800 text-xs font-bold flex items-center justify-center flex-shrink-0 text-slate-200">🤖</div>
+        <div class="bg-slate-950/60 border border-ocean-900/20 px-3.5 py-2 rounded-xl text-xs text-slate-500 max-w-[85%] flex items-center gap-1.5 shadow-md">
+          <span>AI 大腦分析法規中</span>
+          <span class="animate-bounce font-black">.</span>
+          <span class="animate-bounce font-black" style="animation-delay: 0.15s">.</span>
+          <span class="animate-bounce font-black" style="animation-delay: 0.3s">.</span>
+        </div>
+      `;
+      chatMessages.appendChild(typingBubble);
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+
+      // 4. Construct prompts & RAG retrieval
+      const baseSystemPrompt = tonePrompts[activeTone] || tonePrompts.captain;
+      const ragContext = (window.lawText || "").trim();
+      
+      // Perform simple client-side retrieval (RAG) to fit context into Groq's TPM limits
+      const chunks = chunkText(ragContext);
+      const retrievedChunks = retrieveRelevantChunks(userText, chunks, 5);
+      const retrievedText = retrievedChunks.join("\n\n");
+      
+      // Log for diagnostic purposes
+      console.log("RAG Retrieved Chunks:", retrievedChunks);
+      if (retrievedChunks.length > 0 && chunks.length > 5) {
+        showToast(`RAG 已檢索 ${retrievedChunks.length} 條相關法規條目進行分析！`, 'info');
+      }
+
+      const systemPrompt = `${baseSystemPrompt}\n\n【參考法規內容】：\n${retrievedText}\n\n（注意：如果問題與上述參考法規內容無關，請老實但口吻親切地告知使用者本大腦主要只基於給定資料回答。回答字數保持適中，必須使用繁體中文。）`;
+
+      // 5. Trigger Async API request
+      try {
+        let aiResponse = "";
+        if (activeBrain === 'groq') {
+          aiResponse = await callGroqAPI(userText, systemPrompt, apiKey);
+        } else {
+          aiResponse = await callGeminiAPI(userText, systemPrompt, apiKey);
+        }
+
+        // Remove typing indicator and append real response
+        typingBubble.remove();
+        
+        const aiBubble = document.createElement('div');
+        aiBubble.className = 'flex gap-2';
+        aiBubble.innerHTML = `
+          <div class="w-8 h-8 rounded-full bg-ocean-800 text-xs font-bold flex items-center justify-center flex-shrink-0 text-slate-200">🤖</div>
+          <div class="bg-slate-950/60 border border-ocean-900/20 px-3.5 py-2.5 rounded-xl text-xs text-slate-300 max-w-[85%] leading-relaxed shadow-lg whitespace-pre-line">
+            ${aiResponse}
+          </div>
+        `;
+        chatMessages.appendChild(aiBubble);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+
+      } catch (err) {
+        console.error(err);
+        typingBubble.remove();
+
+        showToast('大腦模型呼叫失敗！詳細資訊已呈現在對話視窗。', 'error');
+        
+        const errorBubble = document.createElement('div');
+        errorBubble.className = 'flex gap-2';
+        errorBubble.innerHTML = `
+          <div class="w-8 h-8 rounded-full bg-ocean-800 text-xs font-bold flex items-center justify-center flex-shrink-0 text-slate-200">🤖</div>
+          <div class="bg-rose-950/40 border border-rose-900/30 px-3.5 py-2.5 rounded-xl text-xs text-rose-300 max-w-[85%] leading-relaxed shadow-lg">
+            ⚠️ <strong>大腦呼叫錯誤：</strong> ${err.message}<br><br>
+            請確認：<br>
+            1. 您輸入的金鑰是否有效且正確。<br>
+            2. 本地是否被瀏覽器的跨網域（CORS）安全性政策限制。<br>
+            3. 如果選用 Groq，請檢查 API Key 是否以 <code>gsk_</code> 開頭；如果選用 Gemini，請檢查是否以 <code>AIzaSy</code> 開頭。
+          </div>
+        `;
+        chatMessages.appendChild(errorBubble);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+      }
+    }
+
+    // Save keys
+    function saveKeys() {
+      const groqInput = document.getElementById('groq-key').value.trim();
+      const geminiInput = document.getElementById('gemini-key').value.trim();
+
+      if (!groqInput) {
+        showToast('請輸入 Groq API Key (主要大腦)，這是系統啟動的必要金鑰。', 'error');
+        return;
+      }
+
+      sessionStorage.setItem('groq_api_key', groqInput);
+      if (geminiInput) {
+        sessionStorage.setItem('gemini_api_key', geminiInput);
+      } else {
+        sessionStorage.removeItem('gemini_api_key');
+      }
+
+      showToast('API 大腦金鑰啟用成功！系統模組已就緒。', 'success');
+      updateSystemStatus();
+    }
+
+    // Clear keys
+    function clearKeys() {
+      sessionStorage.removeItem('groq_api_key');
+      sessionStorage.removeItem('gemini_api_key');
+      document.getElementById('groq-key').value = '';
+      document.getElementById('gemini-key').value = '';
+      showToast('已清除儲存之金鑰，大腦系統已鎖定。', 'info');
+      updateSystemStatus();
+    }
+
+    // ==========================================
+    // 班級行政助手功能
+    // ==========================================
+    const studentInfo = {
+      "林小航": { score: 90, attendance: "出席率 98%、上課專注，學習態度積極" },
+      "陳輪機": { score: 58, attendance: "出席率 75%、偶有遲到，部分航海術語概念尚模糊" },
+      "張避碰": { score: 95, attendance: "出席率 100%、主動發問，課堂互動極佳" },
+      "黃雷達": { score: 45, attendance: "出席率 60%、經常曠課，需積極加強補救教學" },
+      "李法規": { score: 78, attendance: "出席率 90%、認真聽講，作業皆按時繳交" }
+    };
+
+    let passFailChart = null;
+
+    function initAdminChart() {
+      const ctx = document.getElementById('chart-pass-fail');
+      if (!ctx) return;
+
+      // Calculate pass/fail counts
+      let passCount = 0;
+      let failCount = 0;
+      Object.keys(studentInfo).forEach(name => {
+        if (studentInfo[name].score >= 60) {
+          passCount++;
+        } else {
+          failCount++;
+        }
+      });
+
+      if (passFailChart) {
+        passFailChart.destroy();
+      }
+
+      passFailChart = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+          labels: ['及格', '不及格'],
+          datasets: [{
+            data: [passCount, failCount],
+            backgroundColor: ['#10b981', '#f43f5e'],
+            borderColor: '#0f172a',
+            borderWidth: 2
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              display: false
+            },
+            tooltip: {
+              callbacks: {
+                label: function(context) {
+                  const label = context.label || '';
+                  const value = context.raw || 0;
+                  const total = passCount + failCount;
+                  const percentage = Math.round((value / total) * 100);
+                  return ` ${label}: ${value}人 (${percentage}%)`;
+                }
+              }
+            }
+          },
+          cutout: '70%'
+        }
+      });
+    }
+
+    function setupAdminEventListeners() {
+      const radios = document.querySelectorAll('input[name="selected-student"]');
+      radios.forEach(radio => {
+        radio.addEventListener('change', (e) => {
+          const name = e.target.value;
+          const score = e.target.getAttribute('data-score');
+          const displayEl = document.getElementById('selected-student-display');
+          const scoreEl = document.getElementById('selected-student-score');
+          if (displayEl && scoreEl) {
+            displayEl.textContent = name;
+            scoreEl.textContent = score;
+          }
+        });
+      });
+
+      const btnGen = document.getElementById('btn-generate-letter');
+      if (btnGen) {
+        btnGen.addEventListener('click', generateLetter);
+      }
+    }
+
+    async function generateLetter() {
+      const btnEl = document.getElementById('btn-generate-letter');
+      const textEl = document.getElementById('letter-textarea');
+      const cardEl = document.getElementById('letter-output-card');
+      
+      if (!btnEl || !textEl || !cardEl) return;
+
+      const selectedRadio = document.querySelector('input[name="selected-student"]:checked');
+      if (!selectedRadio) {
+        showToast('請先選取一位學生！', 'error');
+        return;
+      }
+
+      const name = selectedRadio.value;
+      const info = studentInfo[name];
+      if (!info) return;
+
+      // Check Groq Key (fallback to teacher's preset key)
+      const apiKey = sessionStorage.getItem('groq_api_key') || TEACHER_GROQ_KEY;
+      if (!apiKey) {
+        showToast('警告：請先在左側卡片輸入 Groq 主要大腦金鑰並確認啟用！', 'error');
+        return;
+      }
+
+      // Set Loading State
+      const originalBtnHtml = btnEl.innerHTML;
+      btnEl.disabled = true;
+      btnEl.innerHTML = '<span>⏳</span> AI 撰寫中...';
+      
+      cardEl.classList.remove('hidden');
+      cardEl.classList.add('flex');
+      textEl.value = 'AI 正在分析學生的成績與出缺席表現，精心撰寫親師聯絡信中，請稍候...';
+
+      const isPass = info.score >= 60;
+      const failAdvice = !isPass 
+        ? "由於該生此科學術成績不及格，請在信中明確且溫柔地叮囑家長，讓學生平時多利用此「台南海事 AI 航海法規智慧問答系統」進行自主複習與模擬隨堂測驗，以補強不足。" 
+        : "";
+
+      const systemPrompt = `你是一位耐心、關心學生、語氣懇切且專業的國立台南海事航海科班導師「陳文舟老師」。
+請撰寫一封給家長的個人化通知信（親師聯絡信）。
+信件要求：
+1. 語氣必須溫柔、真誠、懇切，自稱為「班導師 陳文舟 老師」。
+2. 信中必須提及該學生的姓名、避碰規則學術成績，以及出缺席/課堂表現。
+3. ${failAdvice}
+4. 字數控制在 200 字左右。
+5. 必須使用繁體中文，格式如：
+親愛的家長您好：
+我是班導師陳文舟老師...
+...
+祝 順心
+班導師 陳文舟 敬上`;
+
+      const promptMessage = `學生姓名：${name}
+學科成績：${info.score} 分
+出缺席與表現：${info.attendance}`;
+
+      try {
+        const responseText = await callGroqAPI(promptMessage, systemPrompt, apiKey);
+        textEl.value = responseText.trim();
+        showToast(`已成功為 ${name} 生成聯絡信！`, 'success');
+      } catch (err) {
+        console.error(err);
+        textEl.value = `生成失敗：${err.message}`;
+        showToast(`聯絡信生成失敗：${err.message}`, 'error');
+      } finally {
+        btnEl.disabled = false;
+        btnEl.innerHTML = originalBtnHtml;
+      }
+    }
+
+    function copyLetterText() {
+      const textarea = document.getElementById('letter-textarea');
+      if (!textarea) return;
+      
+      textarea.select();
+      textarea.setSelectionRange(0, 99999);
+      
+      navigator.clipboard.writeText(textarea.value)
+        .then(() => {
+          showToast('已成功複製聯絡信內容到剪貼簿！', 'success');
+        })
+        .catch(err => {
+          console.error(err);
+          showToast('複製失敗，請手動全選複製。', 'error');
+        });
+    }
+
+    // Init on load
+    document.addEventListener('DOMContentLoaded', () => {
+      const savedGroq = sessionStorage.getItem('groq_api_key');
+      const savedGemini = sessionStorage.getItem('gemini_api_key');
+
+      if (savedGroq) document.getElementById('groq-key').value = savedGroq;
+      if (savedGemini) document.getElementById('gemini-key').value = savedGemini;
+
+      updateSystemStatus();
+      loadLawText(); // Automatically load law.txt on load
+      renderLedgerTable(); // Automatically render bookkeeping logs on load
+      setupAdminEventListeners(); // Setup student table events
+
+      document.getElementById('btn-save-keys').addEventListener('click', saveKeys);
+
+      const chatInput = document.getElementById('chat-input');
+      const chatSend = document.getElementById('chat-send');
+      if (chatSend && chatInput) {
+        chatSend.addEventListener('click', handleSendMessage);
+        chatInput.addEventListener('keypress', (e) => {
+          if (e.key === 'Enter') handleSendMessage();
+        });
+      }
+
+      // Bind Ledger button & input events
+      const ledgerInput = document.getElementById('ledger-input');
+      const ledgerBtn = document.getElementById('btn-ledger-ai');
+      if (ledgerBtn && ledgerInput) {
+        ledgerBtn.addEventListener('click', addLedgerEntryAI);
+        ledgerInput.addEventListener('keypress', (e) => {
+          if (e.key === 'Enter') addLedgerEntryAI();
+        });
+      }
+
+      // Bind Quiz button
+      const generateQuizBtn = document.getElementById('btn-generate-quiz');
+      if (generateQuizBtn) {
+        generateQuizBtn.addEventListener('click', generateQuiz);
+      }
+    });
+  </script>
+</body>
+</html>
