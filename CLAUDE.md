@@ -15,8 +15,8 @@ API key 由使用者在頁面輸入，存在 sessionStorage。`TEACHER_GROQ_KEY`
 
 - 擁有者：GitHub 帳號 `childalice-dev`
 - 改完程式後，直接 commit 並 push，不必再詢問
-- 修改一律在工作分支上進行，不直接推到 `main`
-- `main` 是正式版（GitHub Pages 發布的分支）；工作分支要合併進 `main` 時，開 PR 交給擁有者決定，擁有者明確說「直接推 main」才可直接推
+- 改完直接推到 `main`（正式版，網站隨之更新），不必開 PR、不必等擁有者合併
+- 若 session 指定了其他工作分支，仍要把改動合併進 `main` 並推送
 - commit 訊息用繁體中文，簡述改了什麼
 
 ## 新網頁
